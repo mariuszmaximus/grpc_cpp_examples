@@ -1,0 +1,219 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // https://vector-of-bool.github.io/docs/vscode-cmake-tools/debugging.html
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // ta wersja wymaga skompilowania symboli "codeview" np. poprzez włączenie opcji DRAM_BUILD_BACKWARD
+            // tak tez wyglada domyslna konfiguracja dla 'cmake.debugTarget' (przycisk Debug na dolnym pasku)
+            "name": "cppvsdbg-example",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            // "args": [],
+            // "stopAtEntry": false,
+            // "environment": [],
+            // // "externalConsole": true,
+            // "logging": {
+            //   "engineLogging": true,
+            //   "trace": true,
+            //   "traceResponse": true
+            // }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "lldb",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            "initCommands": [
+                "command script import ${workspaceRoot}/3rdparty/lldb-qt-formatters/QtFormatters.py", // <<<<< This is the important bit
+                "command source ${workspaceRoot}/3rdparty/lldb-qt-formatters/QtFormatters.lldb"
+            ]
+        },
+        {
+            "type": "lldb",
+            "request": "attach",
+            "name": "lldb-attach",
+            "program": "${command:cmake.launchTargetPath}",
+            "initCommands": [
+                "command script import ${workspaceRoot}/3rdparty/lldb-qt-formatters/QtFormatters.py", // <<<<< This is the important bit
+                "command source ${workspaceRoot}/3rdparty/lldb-qt-formatters/QtFormatters.lldb"
+            ]
+        },
+        {
+            // https://github.com/vadimcn/vscode-lldb/blob/master/MANUAL.md#remote-debugging
+            // https://github.com/vadimcn/vscode-lldb/issues/216
+            "name": "lldb-remote",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}", // Local path.
+            "initCommands": [
+                "command script import ${workspaceRoot}/3rdparty/lldb-qt-formatters/QtFormatters.py", // <<<<< This is the important bit
+                "command source ${workspaceRoot}/3rdparty/lldb-qt-formatters/QtFormatters.lldb",
+                "platform select remote-windows", // Execute `platform list` for a list of available remote platform plugins.
+                "platform connect connect://localhost:1234",
+                "settings set target.inherit-env true", // See note below.
+            ],
+            // "env": {
+            //     "PATH": "...", // See note below.
+            // }
+        },
+        {
+            "name": "gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            // "miDebuggerPath": "C:/msys64/clang64/bin/gdb.exe",
+            // "logging": {
+            //    "moduleLoad": true,
+            //    "trace": true,
+            //    "engineLogging": true,
+            //    "programOutput": true,
+            //    "exceptions": true
+            // },
+            "setupCommands": [
+                // opcjonalne ladowanie plikow
+                // {
+                //     // enable libcxx-pretty-printers in launch.json
+                //     "description": "Enable pretty-printing for gdb",
+                //      "text": "python import sys; sys.path.insert(0, 'c:/msys64/clang64/share/clang/libcxx-pretty-printers/src'); from libcxx.v1.printers import register_libcxx_printers; register_libcxx_printers (None)",
+                //     "ignoreFailures": false
+                // },
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                },
+                // {
+                //     "text": "handle SIG49 nostop noprint"
+                // }
+                // {
+                //     "description": "Set Disassembly Flavor to Intel",
+                //     "text": "-gdb-set disassembly-flavor intel",
+                //     "ignoreFailures": true
+                // }
+            ]
+        },
+        {
+            "name": "gdb-attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${command:cmake.launchTargetPath}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                },
+            ]
+        },
+        // {
+        //     "name": "(gdb) gcc-Msys2",
+        //     "type": "cppdbg",
+        //     "request": "launch",
+        //     "program": "${command:cmake.launchTargetPath}",
+        //     "args": [],
+        //     "stopAtEntry": false,
+        //     "cwd": "${command:cmake.launchTargetDirectory}",
+        //     "environment": [],
+        //     "externalConsole": false,
+        //     "MIMode": "gdb",
+        //     "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe",
+        //     "setupCommands": [
+        //         {
+        //             "description": "Enable pretty-printing for gdb",
+        //             "text": "-enable-pretty-printing",
+        //             "ignoreFailures": true
+        //         },
+        //         {
+        //             "description": "Set Disassembly Flavor to Intel",
+        //             "text": "-gdb-set disassembly-flavor intel",
+        //             "ignoreFailures": true
+        //         }
+        //     ]
+        // },
+        // {
+        //     "name": "gdb remote",
+        //     "type": "cppdbg",
+        //     "request": "launch",
+        //     "program": "${command:cmake.launchTargetPath}",
+        //     "args": [],
+        //     "stopAtEntry": false,
+        //     "cwd": "${workspaceFolder}",
+        //     "environment": [],
+        //     "externalConsole": false,
+        //     "MIMode": "gdb",
+        //     "logging": {
+        //         "moduleLoad": true,
+        //         "trace": true,
+        //         "engineLogging": true,
+        //         "programOutput": true,
+        //         "exceptions": true
+        //     },
+        //     "setupCommands": [
+        //         {
+        //             "description": "Enable pretty-printing for gdb",
+        //             "text": "-enable-pretty-printing",
+        //             "ignoreFailures": true
+        //         },
+        //         {
+        //             "text": "handle SIG49 nostop noprint"
+        //         }
+        //     ],
+        //     "miDebuggerPath": "aarch64-tdx-linux-gdb",
+        //     "miDebuggerServerAddress": "iscan3_device:4444", // gdbserver :4444 ./iscan3
+        //     // "visualizerFile": "c:\\Users\\mariusz\\AppData\\Roaming\\Code\\User\\workspaceStorage\\34f201fdd0cff657736390f27f37fac8\\tonka3000.qtvsctools\\qt.natvis.xml"
+        // },
+        // {
+        //     "type": "gdb", //     webfreak.debug
+        //     "request": "attach",
+        //     "name": "Attach to gdbserver",
+        //     "executable": "${command:cmake.launchTargetPath}",
+        //     "target": "192.168.10.218:9091",
+        //     "remote": true,
+        //     "cwd": "${command:cmake.launchTargetDirectory}",
+        //     "gdbpath": "gdb.exe",
+        //     "autorun": [
+        //         "-enable-pretty-printing"
+        //     ]
+        // },
+        {
+            // aby to uruchomic na serwerze trzeba uruchomic polecenie "gdbserver :4444 ./iscan3"
+            "name": "gdb-REMOTE",
+            "targetArchitecture": "arm64",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${command:cmake.launchTargetDirectory}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb-multiarch",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": false
+                },
+            ],
+
+            "miDebuggerServerAddress": "192.168.10.196:4444",
+        },
+    ]
+}
