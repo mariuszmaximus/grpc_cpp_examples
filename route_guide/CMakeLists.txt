@@ -24,7 +24,7 @@ project(RouteGuide C CXX)
 include(../cmake/common.cmake)
 
 # Proto file
-get_filename_component(rg_proto "../../protos/route_guide.proto" ABSOLUTE)
+get_filename_component(rg_proto "../protos/route_guide.proto" ABSOLUTE)
 get_filename_component(rg_proto_path "${rg_proto}" PATH)
 
 # Generated sources
