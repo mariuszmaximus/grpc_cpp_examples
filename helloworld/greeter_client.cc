@@ -72,6 +72,37 @@ class GreeterClient {
     }
   }
 
+  void SayHelloStreamReply(const std::string& user)
+  {
+    // Data we are sending to the server.
+    HelloRequest request;
+    request.set_name(user);
+
+    // Container for the data we expect from the server.
+    HelloReply reply;
+
+    // Context for the client. It could be used to convey extra information to
+    // the server and/or tweak certain RPC behaviors.
+    ClientContext context;
+
+    // The actual RPC.
+    auto result = stub_->SayHelloStreamReply(&context, request);
+
+    // Check result
+    if(result)
+    {
+      auto counter{0};
+      while(result->Read(&reply))
+      {
+        std::cout << "SayHelloStreamReply ==> " <<  reply.message() << " " << counter++ <<"\n";
+      }
+    }
+    else
+    {
+      std::cout << "RPC failed";
+    }
+  }
+
  private:
   std::unique_ptr<Greeter::Stub> stub_;
 };

@@ -52,6 +52,24 @@ class GreeterServiceImpl final : public Greeter::Service {
     reply->set_message(prefix + request->name());
     return Status::OK;
   }
+
+  Status SayHelloStreamReply(::grpc::ServerContext* context, const ::helloworld::HelloRequest* request, ::grpc::ServerWriter< ::helloworld::HelloReply>* writer) override
+  {
+    std::string prefix("SayHelloStreamReply:");
+
+    HelloReply reply;
+    for(int i = 0; i < 16; i++)
+    {
+      std::ostringstream stream;  
+      stream << prefix << request->name()  << " " << i;
+      reply.set_message( stream.str());
+
+      writer->Write(reply);
+    }
+
+    return Status::OK;
+  }
+
 };
 
 void RunServer(uint16_t port) {
