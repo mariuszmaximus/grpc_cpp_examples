@@ -36,6 +36,7 @@ ABSL_FLAG(std::string, target, "localhost:50051", "Server address");
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
+using grpc::ClientReaderWriter;
 using helloworld::Greeter;
 using helloworld::HelloReply;
 using helloworld::HelloRequest;
@@ -103,6 +104,37 @@ class GreeterClient {
     }
   }
 
+
+  void SayHelloBidiStream(const std::string& user)
+  {
+    // Context for the client. It could be used to convey extra information to
+    // the server and/or tweak certain RPC behaviors.
+    ClientContext context;
+
+    std::shared_ptr<ClientReaderWriter<HelloRequest, HelloReply> > stream(
+        stub_->SayHelloBidiStream(&context));
+
+
+    HelloRequest _forWrite;
+
+    for(int i = 0; i < 16; ++i)
+    {
+      stream->Write(_forWrite);
+    }
+    stream->WritesDone();
+
+    HelloReply _forRead;
+    while(stream->Read(&_forRead))
+    {
+      std::cout << "SayHelloBidiStream:"  << _forRead.message()<<"\n";
+    }
+
+    Status status = stream->Finish();
+    if (!status.ok()) {
+      std::cout << "RouteChat rpc failed." << std::endl;
+    }
+  }
+
  private:
   std::unique_ptr<Greeter::Stub> stub_;
 };
@@ -121,5 +153,13 @@ int main(int argc, char** argv) {
   std::string reply = greeter.SayHello(user);
   std::cout << "Greeter received: " << reply << std::endl;
 
+
+  std::cout << "SayHelloStreamReply\n";
+  greeter.SayHelloStreamReply(user);
+
+  std::cout << "SayHelloBidiStream\n";
+  greeter.SayHelloBidiStream(user);
+  
+  
   return 0;
 }

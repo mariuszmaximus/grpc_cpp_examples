@@ -70,6 +70,17 @@ class GreeterServiceImpl final : public Greeter::Service {
     return Status::OK;
   }
 
+  Status SayHelloBidiStream(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::helloworld::HelloReply, ::helloworld::HelloRequest>* stream) override
+  {
+    HelloRequest  _forRead;
+    HelloReply _forWrite;
+    while(stream->Read(&_forRead))
+    {
+      _forWrite.set_message(_forRead.name()+"++++");
+      stream->Write(_forWrite);
+    }
+    return Status::OK;
+  }
 };
 
 void RunServer(uint16_t port) {
